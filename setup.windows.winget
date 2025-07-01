@@ -9,13 +9,13 @@ properties:
       allowPrerelease: true
     settings:
       MinVersion: '10.0.22631'
-  - resource: Microsoft.Windows.Developer/OsVersion
-    id: verifyMaxOsVersion24H2
-    directives:
-      description: Verify max OS version requirement Windows 11 Version 24H2
-      allowPrerelease: true
-    settings:
-      MinVersion: '10.0.26100'
+  # - resource: Microsoft.Windows.Developer/OsVersion
+  #   id: verifyMaxOsVersion24H2
+  #   directives:
+  #     description: Verify max OS version requirement Windows 11 Version 24H2
+  #     allowPrerelease: true
+  #   settings:
+  #     MinVersion: '10.0.26100'
   resources:
   - resource: Microsoft.Windows.Developer/UserAccessControl
     directives:
@@ -91,48 +91,4 @@ properties:
     settings:
       Name: Microsoft.Windows.Notepad.System~~~~0.0.1.0
       Ensure: Present
-  - resource: PSDesiredStateConfiguration/WindowsOptionalFeatureSet
-    dependsOn:
-    - addDotNetFx3
-    - addOpenSSHClient
-    - addWirelessDisplay
-    - addNotePad
-    directives:
-      description: Enable Windows optional features
-      securityContext: elevated
-    settings:
-      Name:
-      - NetFx3
-      - NetFx4-AdvSrvs
-      - Microsoft-RemoteDesktopConnection
-      - Microsoft-Hyper-V-All
-      - HypervisorPlatform
-      - VirtualMachinePlatform
-      - Microsoft-Windows-Subsystem-Linux
-      Ensure: Present
-  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
-    id: setExecutionPolicy
-    directives:
-      description: Set PowerShell Execution Policy
-      securityContext: elevated
-      allowPrerelease: true
-    settings:
-      executable: powershell
-      arguments:
-      - -ExecutionPolicy
-      - Bypass
-      - -NoProfile
-      - -c
-      - "Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy RemoteSigned -Force"
-  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
-    id: enableSudo
-    dependsOn:
-    - verifyMinOsVersion24H2
-    directives:
-      description: Enable Sudo for Windows
-      securityContext: elevated
-      allowPrerelease: true
-    settings:
-      executable: sudo
-      arguments: ["config", "--enable", "normal"]
   configurationVersion: "0.2.0"
