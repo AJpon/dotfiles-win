@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/google/yamlfmt/main/schema.json
+# .yamlfmt.yml
+# Configuration for yamlfmt tool
+
+continue_on_error: true
+
+formatter:
+  type: basic
+  indent: 2
+  disallow_anchors: false
+  scan_folded_as_literal: true
+  indentless_arrays: true
+  trim_trailing_whitespace: true
+  eof_newline: true
+  retain_line_breaks: true
+  # retain_line_breaks_single: true
+  drop_merge_tag: true

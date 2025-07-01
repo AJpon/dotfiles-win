@@ -1,0 +1,9 @@
+[submodule "tools/winget-dsc"]
+	path = tools/winget-dsc
+	url = https://github.com/microsoft/winget-dsc.git
+[submodule "tools/winget-cli"]
+	path = tools/winget-cli
+	url = https://github.com/microsoft/winget-cli.git
+[submodule "tools/DSC"]
+	path = tools/DSC
+	url = https://github.com/PowerShell/DSC.git

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"[yaml]": {
+			"editor.defaultFormatter": "bluebrown.yamlfmt"
+		}
+	}
+}

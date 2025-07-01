@@ -1,0 +1,375 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+
+properties:
+  assertions:
+  - resource: Microsoft.Windows.Developer/OsVersion
+    directives:
+      description: Verify min OS version requirement
+      allowPrerelease: true
+    settings:
+      MinVersion: '10.0.22000'
+  resources:
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addChrome
+    settings:
+      id: Google.Chrome
+      source: winget
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addDriveFs
+    directives:
+      description: Install Google Drive
+      allowPrerelease: true
+      securityContext: elevated
+    settings:
+      id: Google.GoogleDrive
+      source: winget
+      UseLatest: true
+      InstallMode: Interactive
+  - resource: Microsoft.Windows/Registry
+    id: disable drive fs localization
+    dependsOn:
+    - addDriveFs
+    directives:
+      allowPrerelease: true
+      securityContext: elevated
+    settings:
+      keyPath: 'HKLM:\Software\Google\DriveFS' # Machine scope
+      valueName: DisableLocalizedVirtualFolders
+      valueData:
+        DWord: 1
+
+  # - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+  #   id: addToolsInteractive
+  #   directives:
+  #     description: Install tools interactively
+  #     allowPrerelease: true
+  #     securityContext: elevated
+  #   settings:
+  #     executable: winget
+  #     arguments:
+  #     - install
+  #     - --accept-source-agreements
+  #     - --accept-package-agreements
+  #     - --ignore-security-hash
+  #     - -s winget
+  #     - -i
+  #     - -e
+  #     - Microsoft.PowerToys
+
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addWindowsTerminal
+    directives:
+      description: Install Windows Terminal
+      allowPrerelease: true
+      securityContext: elevated
+    settings:
+      id: Microsoft.WindowsTerminal
+      source: winget
+      UseLatest: true
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addPwsh
+    dependsOn:
+    - addWindowsTerminal
+    directives:
+      description: Install PowerShell
+      allowPrerelease: false
+      securityContext: elevated
+    settings:
+      id: Microsoft.Powershell
+      source: winget
+      UseLatest: true
+      InstallMode: Interactive
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+    id: addVSCode
+    dependsOn:
+    - addWindowsTerminal
+    directives:
+      description: Install Visual Studio Code
+      allowPrerelease: true
+      securityContext: current
+    settings:
+      executable: winget
+      arguments:
+      - install
+      - --accept-source-agreements
+      - --accept-package-agreements
+      - --ignore-security-hash
+      - -s winget
+      - -h
+      - --installer-type inno
+      - -e --id Microsoft.VisualStudioCode
+      - --scope user
+      - --custom
+      - >
+        "/NoIcons=0
+        /Tasks=addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath"
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+    id: addGit
+    dependsOn:
+    - addWindowsTerminal
+    - addVSCode
+    directives:
+      description: Install Git
+      allowPrerelease: true
+      securityContext: elevated
+    settings:
+      executable: winget
+      arguments:
+      - install
+      - --accept-source-agreements
+      - --accept-package-agreements
+      - --ignore-security-hash
+      - -s winget
+      - -h
+      - --installer-type inno
+      - -e --id Git.Git
+      - --scope machine
+      - --custom
+      - >
+        "/NoIcons=0
+        /Components=ext,ext\shellhere,ext\guihere,gitlfs,assoc,assoc_sh,windowsterminal,scalar
+        /EditorOption=VisualStudioCode
+        /DefaultBranchOption=main
+        /PathOption=Cmd
+        /SSHOption=OpenSSH
+        /TortoiseOption=false
+        /CURLOption=WinSSL
+        /CRLFOption=LFOnly
+        /BashTerminalOption=MinTTY
+        /GitPullBehaviorOption=Merge
+        /UseCredentialManager=Enabled
+        /PerformanceTweaksFSCache=Enabled
+        /EnableSymlinks=Enabled
+        /EnableFSMonitor=Disabled
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+    id: addUV
+    dependsOn:
+    - addGit
+    settings:
+      executable: powershell
+      arguments:
+      - -ExecutionPolicy
+      - Bypass
+      - -c
+      - "irm https://astral.sh/uv/install.ps1 | iex"
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addPowerToys
+    dependsOn:
+    - addPwsh
+    directives:
+      description: Install PowerToys
+      allowPrerelease: true
+      securityContext: current
+    settings:
+      id: Microsoft.PowerToys
+      source: winget
+      UseLatest: true
+      InstallMode: Interactive
+  - resource: Microsoft.PowerToys.Configure/PowerToysConfigure
+    id: configurePowerToys
+    dependsOn:
+    - addPowerToys
+    settings:
+      GeneralSettings:
+        Startup: true
+        EnableWarningsElevatedApps: true
+        EnableExperimentation: true
+      AlwaysOnTop:
+        Enabled: true
+        Hotkey: 'Ctrl+Win+T'
+        FrameEnabled: true
+        FrameThickness: 6
+        FrameColor: '#FFFA0973'
+        FrameOpacity: 75
+        FrameAccentColor: false
+        SoundEnabled: true
+        DoNotActivateOnGameMode: true
+        RoundCornersEnabled: true
+      Awake:
+        Enabled: true
+        KeepScreenOn: true
+        Mode: PASSIVE
+        IntervalHours: 1
+        IntervalMinutes: 0
+      ColorPicker:
+        Enabled: true
+        ActivationShortcut: 'Win+Shift+C'
+        CopiedColorRepresentation: HEX
+        ActivationAction: OpenEditor
+        ShowColorName: true
+      CropAndLock:
+        Enabled: true
+        LaunchAdministrator: true
+      FancyZones:
+        Enabled: false
+      FileLocksmith:
+        Enabled: true
+        ExtendedContextMenuOnly: false
+      FindMyMouse:
+        Enabled: true
+        ActivationMethod: 0
+      Hosts:
+        Enabled: false
+        LaunchAdministrator: true
+        ShowStartupWarning: true
+      ImageResizer:
+        Enabled: false
+      KeyboardManager:
+        Enabled: true
+      MeasureTool:
+        Enabled: true
+      MouseHighlighter:
+        Enabled: true
+        ActivationShortcut: 'Shift+Win+H'
+      MouseJump:
+        Enabled: false
+      MousePointerCrosshairs:
+        Enabled: false
+      MouseWithoutBorders:
+        Enabled: false
+        ShowOriginalUI: true
+        WrapMouse: true
+        ShareClipboard: true
+        TransferFile: true
+        HideMouseAtScreenEdge: true
+        DrawMouseCursor: true
+        ValidateRemoteMachineIP: false
+        SameSubnetOnly: false
+        BlockScreenSaverOnOtherMachines: true
+        MoveMouseRelatively: false
+        BlockMouseAtScreenCorners: true
+        EasyMouse: 1
+      PastePlain:
+        Enabled: false
+      Peek:
+        Enabled: false
+      PowerAccent:
+        Enabled: false
+      PowerLauncher:
+        Enabled: false
+        OpenPowerLauncher: 'Alt+Space'
+        IgnoreHotkeysInFullscreen: false
+        ClearInputOnLaunch: false
+        TabSelectsContextButtons: true
+        Position: Cursor
+        UseCentralizedKeyboardHook: true
+      PowerOcr:
+        Enabled: false
+      PowerPreview:
+        EnableSvgPreview: true
+        EnableSvgThumbnail: true
+        EnableMdPreview: true
+        EnableMonacoPreview: true
+        EnableMonacoPreviewWordWrap: true
+        MonacoPreviewTryFormat: true
+        MonacoPreviewMaxFileSize: 50
+        EnablePdfPreview: true
+        EnablePdfThumbnail: true
+        EnableGcodePreview: true
+        EnableGcodeThumbnail: true
+        EnableStlThumbnail: true
+        StlThumbnailColor: '#FFC924'
+        EnableQoiPreview: true
+        EnableQoiThumbnail: true
+      PowerRename:
+        Enabled: true
+        MRUEnabled: true
+        MaxMRUSize: 10
+        ExtendedContextMenuOnly: false
+        UseBoostLib: false
+      RegistryPreview:
+        Enabled: true
+        DefaultRegApp: true
+      ShortcutGuide:
+        Enabled: false
+      VideoConference:
+        Enabled: false
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addIcaros
+    directives:
+      description: FFmpeg Thumbnail Provider
+      securityContext: elevated
+    settings:
+      id: Icaros.Icaros
+      source: winget
+      UseLatest: true
+      InstallMode: Silent
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+    id: addMPC-BE
+    directives:
+      securityContext: elevated
+    settings:
+      executable: winget
+      arguments:
+      - install
+      - --accept-source-agreements
+      - --accept-package-agreements
+      - --ignore-security-hash
+      - -s winget
+      - -h
+      - -e MPC-BE.MPC-BE
+      - --custom
+      - >
+        "/NoIcons=0
+        /SetupType=custom
+        /Components=main,mpciconlib,mpcresources,mpcbeshellext,mpcvr,mpcscriptsrc"
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+    id: addWireshark
+    directives:
+      securityContext: elevated
+    settings:
+      executable: winget
+      arguments:
+      - install
+      - --accept-source-agreements
+      - --accept-package-agreements
+      - --ignore-security-hash
+      - -s winget
+      - -h
+      - -e WiresharkFoundation.Wireshark
+      - --custom
+      - "/S /EXTRACOMPONENTS=udpdump /desktopicon=no"
+  - resource: Microsoft.WinGet.DSC/WinGetPackage
+    id: addNpcap
+    dependsOn:
+    - addWireshark
+    directives:
+      securityContext: elevated
+    settings:
+      id: Insecure.Npcap
+      source: winget
+      UseLatest: true
+      InstallMode: Silent
+  - resource: Microsoft.DSC.Transitional/RunCommandOnSet
+
+    id: addToolsSilent
+    directives:
+      allowPrerelease: true
+      securityContext: elevated
+    settings:
+      executable: winget
+      arguments:
+      - install
+      - --accept-source-agreements
+      - --accept-package-agreements
+      - --ignore-security-hash
+      - -s
+      - winget
+      - -h
+      - -e
+      - Adobe.CreativeCloud
+      - 7zip.7zip
+      - voidtools.Everything
+      - Unity.UnityHub
+      - Gyan.FFmpeg
+      - Microsoft.DotNet.SDK.9
+      - Notion.Notion
+      - DevToys-app.DevToys
+      - Fork.Fork
+      - dnSpyEx.dnSpy
+      - rsteube.Carapace
+      - SlackTechnologies.Slack
+      - CoreyButler.NVMforWindows
+      - MediaArea.MediaInfo.GUI
+      - AntibodySoftware.WizTree
+  configurationVersion: "0.2.0"

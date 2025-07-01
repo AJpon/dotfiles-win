@@ -1,0 +1,28 @@
+[
+  {
+    "version" : 1
+  },
+  {
+    "action" : {
+      "script" : "echo ${repo:name} - ${sha:abbr} archive:\n\ngit archive HEAD --output=${repo:name}-${sha:abbr}.zip",
+      "showOutput" : true,
+      "type" : "sh",
+      "waitForExit" : true
+    },
+    "name" : "Create archive from this commit",
+    "target" : "revision"
+  },
+  {
+    "action" : {
+      "script" : "echo ${repo:name} - ${ref} archive:\n\ngit archive HEAD --output=${repo:name}-${ref}.zip",
+      "showOutput" : true,
+      "type" : "sh",
+      "waitForExit" : true
+    },
+    "name" : "Create git archive from this Tag",
+    "refTargets" : [
+      "tag"
+    ],
+    "target" : "ref"
+  }
+]
