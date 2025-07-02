@@ -82,6 +82,8 @@ properties:
         Startup: true
         EnableWarningsElevatedApps: true
         EnableExperimentation: true
+      AdvancedPaste:
+        Enabled: false
       AlwaysOnTop:
         Enabled: true
         Hotkey: 'Ctrl+Win+T'
@@ -95,7 +97,7 @@ properties:
         RoundCornersEnabled: true
       Awake:
         Enabled: true
-        KeepScreenOn: true
+        KeepDisplayOn: true
         Mode: PASSIVE
         IntervalHours: 1
         IntervalMinutes: 0
@@ -106,6 +108,8 @@ properties:
         ActivationAction: OpenEditor
         ShowColorName: true
       CropAndLock:
+        Enabled: true
+      EnvironmentVariables:
         Enabled: true
         LaunchAdministrator: true
       FancyZones:
@@ -147,8 +151,11 @@ properties:
         MoveMouseRelatively: false
         BlockMouseAtScreenCorners: true
         EasyMouse: 1
-      PastePlain:
-        Enabled: false
+      NewPlus:
+        Enabled: true
+        HideFileExtension: false
+        HideStartingDigits: false
+        TemplateLocation: NewPlus/Templates
       Peek:
         Enabled: false
       PowerAccent:
@@ -190,7 +197,10 @@ properties:
         DefaultRegApp: true
       ShortcutGuide:
         Enabled: false
-      VideoConference:
+      Workspaces:
+        Enabled: false
+        Hotkey: 'Win+W'
+      ZoomIt:
         Enabled: false
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     id: addIcaros
