@@ -208,9 +208,13 @@ function Import-Profile($profilePath = $PROFILE) {
     # プロファイルの読み込み
     . $profilePath
 }
+function Reload-Profile {
+    Import-Profile $PROFILE
+    Write-Host "`nReloaded PROFILE`n`n" -ForegroundColor Green -NoNewline
+}
 # bash like import command
 Set-Alias -Name .profile -Value Reload-Profile
-Set-Alias -Name source -Value Reload-Profile
+Set-Alias -Name source -Value Import-Profile
 #endregion Reload-Profile
 
 #region Add-Operator
@@ -237,20 +241,50 @@ if ($IsWindows) {
             [boolean] $vcpkg = $true
         )
 
-        $vsModulePath = "${ENV:ProgramFiles}\Microsoft Visual Studio\${version}\${edition}\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+        $VsBasePath = "${ENV:ProgramFiles}\Microsoft Visual Studio\${version}\${edition}"
+        $VsInstallationPath = "${VsBasePath}\Common7\Tools"
+        $DevShellAssemblyName = "Microsoft.VisualStudio.DevShell.dll"
+
+        function GetSetupConfigurations {
+            param (
+                [string]
+                $whereArgs = "-path `"$VsInstallationPath`"",
+                [string]
+                $VsWherePath = "${ENV:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+            )
+            $expression = "& `"$VsWherePath`" $whereArgs -format json"
+            Invoke-Expression $expression | ConvertFrom-Json
+        }
+
+        $vsModulePath = "${VsInstallationPath}\vsdevshell\$DevShellAssemblyName"
+        $vsModulePath = if (Test-Path $vsModulePath) { $vsModulePath } else { "${VsInstallationPath}\$DevShellAssemblyName" }
 
         if (-not (Test-Path $vsModulePath)) {
-            Write-Error "Visual Studio $edition $version is not installed."
+            # Write-Error "Visual Studio $edition $version is not installed."
+            Write-Error "Visual Studio Developer Shell module not found.`n    $vsModulePath"
             return
         }
 
-        Import-Module -Name $vsModulePath
-        Enter-VsDevShell 3c106489 -SkipAutomaticLocation -DevCmdArguments "-arch=${targetArch} -host_arch=${hostArch}"
+        try {
+            Import-Module -Name $vsModulePath
+        }
+        catch [System.IO.FileLoadException] {
+            Write-Verbose "The module has already been imported from a different installation of Visual Studio:"
+            (Get-Module Microsoft.VisualStudio.DevShell).Path | Write-Verbose
+        }
+
+        $config = GetSetupConfigurations
+        $vsInstanceId = $config.instanceId
+        Enter-VsDevShell $vsInstanceId -SkipAutomaticLocation -DevCmdArguments "-arch=${targetArch} -host_arch=${hostArch}"
 
         if ($vcpkg) {
-            $vcpkgModulePath = "${ENV:ProgramFiles}\Microsoft Visual Studio\${version}\${edition}\VC\vcpkg\scripts\posh-vcpkg"
+            $vcpkgModulePath = "${VsBasePath}\VC\vcpkg\scripts\posh-vcpkg"
             Import-Module -Name $vcpkgModulePath
         }
+
+        # プロンプトを変更
+        function VSPrompt {return UserPrompt -prefix ($bcolors.CYAN + "VS${edition}${version} PWSH" + $bcolors.ENDC)}
+        set-alias Prompt VSPrompt
     }
 }
 
@@ -439,6 +473,15 @@ Set-PSReadLineKeyHandler -Key F1 `
 if (Get-Command uv -ErrorAction SilentlyContinue) {
     (& uvx --generate-shell-completion powershell) | Out-String | Invoke-Expression
     (& uv generate-shell-completion powershell) | Out-String | Invoke-Expression
+}
+else{
+    Write-Host (
+        $bcolors.MAGENDA +
+        "  uv is not installed. Install it from https://astral.sh/`n" +
+        $bcolors.CYAN +
+        '    ➤  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"' +
+        $bcolors.ENDC + "`n"
+    )
 }
 
 if (Get-Command dsc -ErrorAction SilentlyContinue) {
