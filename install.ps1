@@ -1,4 +1,17 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+    Installs required software and configures the system.
+
+.DESCRIPTION
+    This script installs required software using winget and configures the system with necessary settings.
+    It requires administrative privileges to run.
+
+.PARAMETER Debug
+    If specified, enables debug output.
+#>
+
+param (
+    [Parameter(HelpMessage = "If specified, enables debug output.")]
     [switch]$Debug
 )
 
