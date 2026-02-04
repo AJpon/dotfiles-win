@@ -45,7 +45,7 @@ if ($Help) {
 }
 if ($PSVersionTable.PSVersion.Major -ge 6 -or -not $isAdmin) {
     Ensure-CommandPath
-    Start-Process powershell.exe -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PSCommandPath, "-Debug:$($PSBoundParameters['Debug'])" -Verb RunAs;
+    Start-Process powershell.exe -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PSCommandPath, "-Debug:$($PSBoundParameters['Debug'])" -Verb RunAs -Wait;
     $EXITCODE = $?
     if ($EXITCODE -ne 0) {
         Write-Error "Failed to run the script as administrator. Please try again."
@@ -80,3 +80,5 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
     $homeDir = [Environment]::GetFolderPath("UserProfile")
     git clone https://github.com/AJpon/dotfiles-win.git "$homeDir/dotfiles-win"
 }
+
+Exit 0
