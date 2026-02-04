@@ -1,13 +1,16 @@
 ﻿<#
 .SYNOPSIS
-    Installs required software and configures the system.
+
+Installs required software and configures the system.
 
 .DESCRIPTION
-    This script installs required software using winget and configures the system with necessary settings.
-    It requires administrative privileges to run.
+
+This script installs required software using winget and configures the system
+with necessary settings. It requires administrative privileges to run.
 
 .PARAMETER Debug
-    If specified, enables debug output.
+If specified, enables debug output.
+
 #>
 
 param (
