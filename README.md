@@ -11,5 +11,5 @@ winget dsc --verbose -f https://raw.githubusercontent.com/AJpon/dotfiles-win/ref
 -->
 
 ```shell
-powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/AJpon/dotfiles-win/refs/heads/main/install.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/AJpon/dotfiles-win/refs/heads/main/install.ps1 -OutFile install.ps1; .\install.ps1; rm .\install.ps1"
 ```

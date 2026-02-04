@@ -15,20 +15,36 @@ Enables debug output.
 
 param (
     [Parameter(HelpMessage = "Enables debug output.")]
-    [switch]$Debug
+    [switch]$d,
+    [Parameter(HelpMessage = "Print Help")]
+    [switch]$Help
 )
 
 $PSReadLineHistorySaveStyle = "Never"
 
 # $VerbosePreference = "Continue"
-if ($PSBoundParameters['Debug']) {
+if ($PSBoundParameters['Debug'] -or $d) {
+    $d = $true
     $DebugPreference = "Continue"
 }
 $ErrorActionPreference = "Stop"
 
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole("Administrators")
 
+function Ensure-CommandPath {
+    if ($PSCommandPath -eq $null) {
+        Write-Error "This script must be run as administrator. Please restart PowerShell as administrator and run the script again."
+        exit 1
+    }
+}
+
+if ($Help) {
+    Ensure-CommandPath
+    Get-Help $PSCommandPath -Detailed
+    Exit 0
+}
 if ($PSVersionTable.PSVersion.Major -ge 6 -or -not $isAdmin) {
+    Ensure-CommandPath
     Start-Process powershell.exe -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $PSCommandPath, "-Debug:$($PSBoundParameters['Debug'])" -Verb RunAs;
     $EXITCODE = $?
     if ($EXITCODE -ne 0) {
