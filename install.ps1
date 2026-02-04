@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 
 Installs required software and configures the system.
