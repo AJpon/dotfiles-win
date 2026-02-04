@@ -9,12 +9,12 @@ This script installs required software using winget and configures the system
 with necessary settings. It requires administrative privileges to run.
 
 .PARAMETER Debug
-If specified, enables debug output.
+Enables debug output.
 
 #>
 
 param (
-    [Parameter(HelpMessage = "If specified, enables debug output.")]
+    [Parameter(HelpMessage = "Enables debug output.")]
     [switch]$Debug
 )
 
