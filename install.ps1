@@ -56,6 +56,7 @@ if ($PSVersionTable.PSVersion.Major -ge 6 -or -not $isAdmin) {
 & powershell -NoProfile -ExecutionPolicy Bypass -c "Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy RemoteSigned -Force" >> $null
 
 & winget configure -f https://raw.githubusercontent.com/AJpon/dotfiles-win/refs/heads/main/setup.windows.winget --verbose
+& winget configure -f https://raw.githubusercontent.com/AJpon/dotfiles-win/refs/heads/main/setup.winget.winget --verbose
 & winget configure -f https://raw.githubusercontent.com/AJpon/dotfiles-win/refs/heads/main/setup.software.winget --verbose
 
 
@@ -65,7 +66,7 @@ if ($PSVersionTable.PSVersion.Major -ge 6 -or -not $isAdmin) {
 
 
 & winget install --accept-source-agreements --accept-package-agreements --ignore-security-hash -s winget -h --installer-type inno -e --id MPC-BE.MPC-BE --scope machine --custom "/NoIcons=0 /SetupType=custom /Components=main,mpciconlib,mpcresources,mpcbeshellext,mpcvr,mpcscriptsrc"
-& winget install --accept-source-agreements --accept-package-agreements --ignore-security-hash -s winget -h -e --id WiresharkFoundation.Wireshark -custom "/S /EXTRACOMPONENTS=udpdump /desktopicon=no"
+& winget install --accept-source-agreements --accept-package-agreements --ignore-security-hash -s winget -h -e --id WiresharkFoundation.Wireshark --custom "/S /EXTRACOMPONENTS=udpdump /desktopicon=no"
 
 & winget install --accept-source-agreements --accept-package-agreements --ignore-security-hash -s winget -h -e Adobe.CreativeCloud 7zip.7zip voidtools.Everything Unity.UnityHub Gyan.FFmpeg Microsoft.DotNet.SDK.9 Notion.Notion DevToys-app.DevToys Fork.Fork dnSpyEx.dnSpy rsteube.Carapace SlackTechnologies.Slack CoreyButler.NVMforWindows MediaArea.MediaInfo.GUI AntibodySoftware.WizTree Insecure.Npcap
 
@@ -79,6 +80,11 @@ Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3","NetFx4-AdvSrvs","Mi
 if (Get-Command git -ErrorAction SilentlyContinue) {
     $homeDir = [Environment]::GetFolderPath("UserProfile")
     git clone https://github.com/AJpon/dotfiles-win.git "$homeDir/dotfiles-win"
+} else {
+    Write-Warning "Git is not installed. Skipping dotfiles-win clone."
 }
+
+Write-Host "Installation and configuration finished."
+Read-Host -Prompt "Press Enter to exit"
 
 Exit 0

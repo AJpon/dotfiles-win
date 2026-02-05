@@ -60,35 +60,35 @@ properties:
       securityContext: elevated
     settings:
       Ensure: Present
-  - resource: Microsoft.Windows.Developer/WindowsCapability
-    id: addDotNetFx3
-    directives:
-      description: Add .NET Framework 3.5
-      securityContext: elevated
-    settings:
-      Name: NetFx3
-      Ensure: Present
-  - resource: Microsoft.Windows.Developer/WindowsCapability
-    id: addOpenSSHClient
-    directives:
-      description: Enable OpenSSH Client
-      securityContext: elevated
-    settings:
-      Name: OpenSSH.Client
-      Ensure: Present
-  - resource: Microsoft.Windows.Developer/WindowsCapability
-    id: addWirelessDisplay
-    directives:
-      description: Add Wireless Display
-      securityContext: elevated
-    settings:
-      Name: App.WirelessDisplay.Connect
-      Ensure: Present
-  - resource: Microsoft.Windows.Developer/WindowsCapability
-    id: addNotePad
-    directives:
-      securityContext: elevated
-    settings:
-      Name: Microsoft.Windows.Notepad.System~~~~0.0.1.0
-      Ensure: Present
+  # - resource: Microsoft.Windows.Developer/WindowsCapability
+  #   id: addDotNetFx3
+  #   directives:
+  #     description: Add .NET Framework 3.5
+  #     securityContext: elevated
+  #   settings:
+  #     Name: NetFx3
+  #     Ensure: Present
+  # - resource: Microsoft.Windows.Developer/WindowsCapability
+  #   id: addOpenSSHClient
+  #   directives:
+  #     description: Enable OpenSSH Client
+  #     securityContext: elevated
+  #   settings:
+  #     Name: OpenSSH.Client
+  #     Ensure: Present
+  # - resource: Microsoft.Windows.Developer/WindowsCapability
+  #   id: addWirelessDisplay
+  #   directives:
+  #     description: Add Wireless Display
+  #     securityContext: elevated
+  #   settings:
+  #     Name: App.WirelessDisplay.Connect
+  #     Ensure: Present
+  # - resource: Microsoft.Windows.Developer/WindowsCapability
+  #   id: addNotePad
+  #   directives:
+  #     securityContext: elevated
+  #   settings:
+  #     Name: Microsoft.Windows.Notepad.System~~~~0.0.1.0
+  #     Ensure: Present
   configurationVersion: "0.2.0"

@@ -8,6 +8,12 @@ properties:
       allowPrerelease: true
     settings:
       MinVersion: '10.0.22000'
+  - resource: WinGetAdminSettings
+    directives:
+      module: Microsoft.WinGet.DSC
+      description: Verify WinGet Admin Settings
+    settings:
+      InstallerHashOverride: true
   resources:
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     id: addChrome
