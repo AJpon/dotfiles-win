@@ -16,4 +16,5 @@ properties:
       securityContext: elevated
       description: Verify WinGet Admin Settings
     settings:
-      InstallerHashOverride: true
+      Settings:
+        InstallerHashOverride: true

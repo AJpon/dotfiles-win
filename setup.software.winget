@@ -13,7 +13,8 @@ properties:
       module: Microsoft.WinGet.DSC
       description: Verify WinGet Admin Settings
     settings:
-      InstallerHashOverride: true
+      Settings:
+        InstallerHashOverride: true
   resources:
   - resource: Microsoft.WinGet.DSC/WinGetPackage
     id: addChrome

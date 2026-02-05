@@ -75,14 +75,14 @@ if (Get-Command sudo -ErrorAction SilentlyContinue)
     & sudo config --enable normal
 }
 
-Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3","NetFx4-AdvSrvs","Microsoft-RemoteDesktopConnection","Microsoft-Hyper-V-All","HypervisorPlatform","VirtualMachinePlatform","Microsoft-Windows-Subsystem-Linux"
-
 if (Get-Command git -ErrorAction SilentlyContinue) {
     $homeDir = [Environment]::GetFolderPath("UserProfile")
     git clone https://github.com/AJpon/dotfiles-win.git "$homeDir/dotfiles-win"
 } else {
     Write-Warning "Git is not installed. Skipping dotfiles-win clone."
 }
+
+Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3","NetFx4-AdvSrvs","Microsoft-RemoteDesktopConnection","Microsoft-Hyper-V-All","HypervisorPlatform","VirtualMachinePlatform","Microsoft-Windows-Subsystem-Linux"
 
 Write-Host "Installation and configuration finished."
 Read-Host -Prompt "Press Enter to exit"
